@@ -3,11 +3,9 @@ package it.unipi.BGnet.controllers.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import com.google.gson.GsonBuilder;
 import it.unipi.BGnet.DTO.PostDTO;
 import it.unipi.BGnet.Utilities.SessionVariables;
 import it.unipi.BGnet.service.pages.PostService;
-
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +19,22 @@ public class LoadPostController {
     @Autowired
     PostService postService;
     @RequestMapping("/api/addPost")
-    public boolean savePost(Model model, @RequestParam("game") String game, @RequestParam("text")String text){
-        String author = ((SessionVariables) model.getAttribute("sessionVariables")).myself;
+    public boolean savePost(Model model, @RequestParam("game") String game, @RequestParam("text")String text) {
+        SessionVariables sv = (SessionVariables) model.getAttribute("sessionVariables");
+        if(sv == null)
+            return false;
+        if(sv.myself == null)
+            return false;
+        String author = sv.myself;
         return postService.addPost(game, author, text);
     }
     @GetMapping("/api/getPost")
-    public @ResponseBody String getPostList(Model model, @RequestParam(value = "page") int pageNumber){
-        if(((SessionVariables) model.getAttribute("sessionVariables")).gameToDisplay == null)
-            return null;
+    public @ResponseBody String getPostList(Model model, @RequestParam(value = "page") int pageNumber) {
         SessionVariables sv = (SessionVariables) model.getAttribute("sessionVariables");
+        if(sv == null)
+            return null;
+        if(sv.gameToDisplay == null)
+            return null;
         List<PostDTO> postList = postService.loadPostPage(model, sv.gameToDisplay, pageNumber);
         sv.currentPage = pageNumber;
         model.addAttribute("sessionVariables", sv);
@@ -47,11 +52,12 @@ public class LoadPostController {
         return gson.toJson(postService.likeUnlikePost(post, sv.myself, game));
     }
     @GetMapping("/api/getPages")
-    public @ResponseBody String getHowManyPages(Model model){
-        if(((SessionVariables) model.getAttribute("sessionVariables")).gameToDisplay == null){
-            return null;
-        }
+    public @ResponseBody String getHowManyPages(Model model) {
         SessionVariables sv = (SessionVariables) model.getAttribute("sessionVariables");
+        if(sv == null)
+            return null;
+        if(sv.gameToDisplay == null)
+            return null;
         int pages = postService.loadNumberOfPages(sv.gameToDisplay);
         Gson gson = new Gson();
         String result = gson.toJson(pages);
