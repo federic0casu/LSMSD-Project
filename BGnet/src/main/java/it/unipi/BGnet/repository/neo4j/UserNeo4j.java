@@ -144,7 +144,6 @@ public class UserNeo4j {
 
 
     public List<Record> getSuggestedGames(String username){
-        logger.warn("CIAOCIAOCIAOCIAOCIAO");
         try{
             return graphNeo4j.read("MATCH (u:User{name:$username})-[:FOLLOWS]->(g:Game) " +
                             "UNWIND g.category AS categories " +

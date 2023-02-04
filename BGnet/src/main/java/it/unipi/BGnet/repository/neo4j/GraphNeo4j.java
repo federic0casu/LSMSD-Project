@@ -14,7 +14,7 @@ import static org.neo4j.driver.Values.parameters;
 public class GraphNeo4j implements AutoCloseable{
     Logger logger = LoggerFactory.getLogger(GraphNeo4j.class);
     private final Driver driver;
-    private final String uri = "bolt://172.16.5.45:7687";
+    private final String uri = "bolt://localhost:7687";
     private final String user = "neo4j";
     private final String pass = "password";
 
